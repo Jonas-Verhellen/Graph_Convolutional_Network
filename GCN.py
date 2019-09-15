@@ -108,6 +108,9 @@ class Workflow():
                 loss_train = functional.nll_loss(output[self.index_train], self.labels[self.index_train])
                 accuracy_train = self.accuracy(output[self.index_train], self.labels[self.index_train])
 
+                loss_train.backward()
+                self.optimizer.step()
+
                 self.model.eval() #turns dropout off
                 output = self.model(self.features, self.adjacency_matrix)
                 loss_validation = functional.nll_loss(output[self.index_validation], self.labels[self.index_validation])
@@ -116,8 +119,6 @@ class Workflow():
                 if epoch%(total_epochs/10) == 0:
                     progress_bar.write(clear_border + "epoch:{} loss:{:.9f} accuracy:{:.2f}".format(epoch, loss_validation, accuracy_validation))
                     progress_bar.write(border)
-                loss_train.backward()
-                self.optimizer.step()
 
         print("Total time elapsed during training: {:.4f}s".format(time.time() - starting_time))
 
